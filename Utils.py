@@ -7,20 +7,29 @@ import matplotlib.dates as mdates
 from matplotlib.pyplot import figure
 
 
-
-def getData():
-    data = pd.read_csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv"		        )
+def getData(tipo:str):
+    if tipo=='regioni':
+        data = pd.read_csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv" )
+    if tipo=='province':
+        data = pd.read_csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-province/dpc-covid19-ita-province.csv" )
     data["data"] = pd.to_datetime(data["data"]).apply(lambda x: x.date())
-    return data     
+    return data   
+  
+  
     
 
-def FattoreAumento(regione: str, df: pd.DataFrame, azione:str ):
+def FattoreAumento(reg: bool, regione: str, df: pd.DataFrame, azione:str ):
     index=0
     val=0
     y = []  
+    nome='denominazione_regione'
+    if not reg:
+        nome='denominazione_provincia'
+        
+        
     data = []  
     for i,valore in df.iterrows():
-        if(valore.denominazione_regione == regione):
+        if(valore[nome] == regione):
             if(index==0):
                 val = valore[azione]
             elif(index!=0):
@@ -36,13 +45,17 @@ def FattoreAumento(regione: str, df: pd.DataFrame, azione:str ):
     PlottingData(data,y,regione,azione)
 
 
-def TotaleAumento(regione: str, df: pd.DataFrame, azione:str ):
+def TotaleAumento(reg: bool,regione: str, df: pd.DataFrame, azione:str ):
     index=0
     val=0
-    y = []  
-    data = []  
+    y = [] 
+    
+    data = []
+    nome='denominazione_regione'
+    if not reg:
+        nome='denominazione_provincia'
     for i,valore in df.iterrows():
-        if(valore.denominazione_regione == regione):
+        if(valore[nome] == regione):
             if(index==0):
                 val = valore[azione]
             elif(index!=0):
@@ -55,11 +68,14 @@ def TotaleAumento(regione: str, df: pd.DataFrame, azione:str ):
     PlottingData(data,y,regione,azione)
     
     
-def TotaleValori(regione: str, df: pd.DataFrame, azione:str ):
+def TotaleValori(reg: bool,regione: str, df: pd.DataFrame, azione:str ):
     y = []  
     data = []  
+    nome='denominazione_regione'
+    if not reg:
+        nome='denominazione_provincia'
     for i,valore in df.iterrows():
-        if(valore.denominazione_regione == regione):
+        if(valore[nome] == regione):
                 y.append(valore[azione])
                 data.append(valore.data)
         print(valore)    
@@ -88,7 +104,11 @@ def PlottingData(x,y,regione:str,azione:str):
 
 
 
-data = getData()
+dataRegioni = getData('regioni')
+dataProvince = getData('province')
+
+print(dataProvince)
+
 
 fig, ax = plt.subplots()
 
@@ -96,14 +116,34 @@ fig, ax = plt.subplots()
 
 
 
+
 regioni=[]
-for val in data.itertuples():
+for val in dataRegioni.itertuples():
     regioni.append(val.denominazione_regione)
 regioni=list(set(regioni))
 
 
-for regione in regioni:
-    FattoreAumento(regione,data,'totale_attualmente_positivi')
+
+province=[]
+for val in dataProvince.itertuples():
+    province.append(val.denominazione_provincia)
+    print(val.totale_casi)
+province=list(set(province))
+
+
+
+print(province)
+
+
+
+for provincia in province[:20]:
+    TotaleValori(False,provincia,dataProvince,'totale_casi')
+
+
+
+
+#for regione in regioni:
+#    FattoreAumento(regione,dataRegioni,'totale_attualmente_positivi')
 
 
 

@@ -22,4 +22,3 @@ regioni=list(set(regioni))
 for regione in regioni:
     utils.TotaleValori(regione,data,'totale_casi')
 
-
