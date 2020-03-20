@@ -136,14 +136,19 @@ print(province)
 
 
 
-for provincia in province[:20]:
-    TotaleValori(False,provincia,dataProvince,'totale_casi')
+#for provincia in province[:30]:
+ #   TotaleValori(False,provincia,dataProvince,'totale_casi')
+
+#TotaleValori(False,'Modena',dataProvince,'totale_casi')
+#TotaleValori(False,'Rovereto',dataProvince,'totale_casi')
+#TotaleValori(False,'Brescia',dataProvince,'totale_casi')
+#TotaleValori(False,'Vicenza',dataProvince,'totale_casi')
 
 
 
 
 #for regione in regioni:
-#    FattoreAumento(regione,dataRegioni,'totale_attualmente_positivi')
+ #   TotaleAumento(True,regione,dataRegioni,'tamponi')
 
 
 
