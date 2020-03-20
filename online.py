@@ -6,8 +6,8 @@ import Utils as utils
 import streamlit as st
 import plotly.express as px
 
-
-st.title('COVID-19 IN ITALIA')
+def main():
+    st.title('COVID-19 IN ITALIA')
 
 
 @st.cache
@@ -54,5 +54,9 @@ st_ms = st.multiselect("Columns", df.columns.tolist(), default=cols)
 
 #utils.TotaleValori(True,'Veneto',df,'totale_casi')
 
+
+
+if __name__ == '__main__':
+    main()
 
 

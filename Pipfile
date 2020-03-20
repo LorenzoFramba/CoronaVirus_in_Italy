@@ -6,4 +6,9 @@ name = "pypi"
 [dev-packages]
 
 [packages]
-"bob-builder" = "==0.0.13"
+"streamlit"="*"
+"pandas" ="*"
+
+[requires]
+python_version = "3.6"
+
