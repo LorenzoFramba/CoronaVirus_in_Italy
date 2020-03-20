@@ -2,3 +2,5 @@ numpy==1.18.1
 altair==4.0.1
 streamlit==0.56.0
 python-dateutil==2.8.0
+plotly==4.5.4
+matplotlib==1.5
