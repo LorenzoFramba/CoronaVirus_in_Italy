@@ -94,7 +94,7 @@ inizio = datetime.date(2020, 2, 24)
 
 
 
-chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {today} e {inizio}", today)
+chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {inizio} e {today} ", today)
 if  chosen_date > inizio  and chosen_date <= today:
     filtered_data = df_prov[df_prov["data"] == chosen_date]
     df,prov = utils.filtra(filtered_data)
