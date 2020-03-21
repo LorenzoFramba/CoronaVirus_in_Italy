@@ -60,7 +60,7 @@ def altair_scatter(dataset, x, y, totale):
         alt.Chart(dataset, height=400, width=600)
         .mark_point(filled=True, opacity=0.8)
         .mark_line(point=True)
-        .encode(x=x, y=y, color=alt.condition(brush, totale, alt.value('lightgray'))) #color=totale
+        .encode(x=x, y=y, color=alt.condition(brush, totale, alt.value('lightgray'))) 
     ).add_selection(brush)#.interactive()
         
     bars = alt.Chart(dataset, height=100, width=600).mark_bar().encode(

@@ -4,7 +4,10 @@ import pandas as pd
 import altair as alt
 import Utils as utils
 import streamlit as st
+from vega_datasets import data
 import pydeck as pdk
+import datetime
+
 
 
 st.title('COVID-19 IN ITALIA')
@@ -83,71 +86,65 @@ st.altair_chart(alt_plot)
 st.subheader('CASI PER PROVINCIA')
 
 
-#crime_type = st.multiselect('Select the list of crimes you\'d like to filter by',
- #                           list(df.category.unique()), list(df.category.unique()))
-
-# Streamlit's integration with DeckGL. 
-# DataFrame is easily filtered based on the output from the multiselect
-#st.deck_gl_chart(
- #   viewport={
-  #      'latitude':df_prov['lat'],
-   #     'longitude':df_prov['lon'],
-    #    'zoom':12
-    #},
-    #layers = [{
-    #'data': df_prov.totale_casi.to_json(),
-    #'type': 'ScatterplotLayer',
-    #'radiusScale':0.1,
-    #'pickable':True
-#}])
 
 dfa = pd.DataFrame(
-    df_prov.totale_casi,
+    df_prov,
     columns=[df_prov.lat, df_prov.lon])
 
 
+filtered_data = df_prov
+filtered_data["days_passed"] = filtered_data["data"].apply(
+        lambda x: (x - datetime.date(2020, 2, 24)).days)
+n_days = filtered_data["days_passed"].unique().shape[0] - 1
+
+st.markdown(
+        "Scegli che data visualizzare come numero di giorni dalla prima raccolta dati, il 24 febbraio:"
+)
+chosen_n_days = st.slider("Giorni:", min_value=0, max_value=n_days, value=n_days,)
+st.markdown(
+        f"Data scelta: {datetime.date(2020, 2, 24) + datetime.timedelta(days=chosen_n_days)}"
+)
+filtered_data = df_prov[df_prov["days_passed"] == chosen_n_days]
+
+zeri =[]
+for i,val in filtered_data.iterrows():
+    if val.totale_casi!=0:
+        for index in range((val.totale_casi)):
+            zeri.append([val.lat,val.lon])
+            
+df = pd.DataFrame(zeri) 
+df.rename(columns={1:'lon',
+                          0:'lat'}, 
+                 inplace=True)
+
+
+#filtered_data.drop(['data', 'stato','codice_regione','denominazione_regione','denominazione_provincia','codice_provincia','sigla_provincia','totale_casi','days_passed'], axis = 1, inplace=True)
 
 st.pydeck_chart(pdk.Deck(
      map_style='mapbox://styles/mapbox/light-v9',
      initial_view_state=pdk.ViewState(
-         latitude=df_prov.lat[3],
-         longitude=df_prov.lon[3],
-         zoom=5,
+         latitude=41.902782,
+         longitude=12.496366,
+         zoom=4.5,
+         get_radius=1000,
          pitch=20,
      ),
      layers=[
-         #pdk.Layer(
-          #  'HexagonLayer',
-        #    data=dfa,
-         #   get_position='[lon, lat]',
-          #  radius=200,
-        #    width_min_pixels=50,
-         #  get_color='[255, 147, 0, 150]',
-          #  elevation_scale=50,
-           # elevation_range=[0, 100000],
-    #        #pickable=True,
-     #       extruded=True,
-      #   ),
          pdk.Layer(
-              'ScatterplotLayer',     # Change the `type` positional argument here
-              data=dfa,
-              get_position=['lon', 'lat'],
-              auto_highlight=True,
-              width_min_pixels=5,
-              get_radius=1000,          # Radius is given in meters
-              get_fill_color=[180, 0, 200, 140],  # Set an RGBA value for fill
-              pickable=True
-              ),
-         #pdk.Layer(
-          #   'ScatterplotLayer',
-           #  data=dfa,
-    #         width_min_pixels=5,
-     #        get_position='[lon, lat]',
-      #       get_color='[2000, 300, 0, 1600]',
-       #      get_radius=20000,
-        # ),
+            'HexagonLayer',
+            data=df,
+            get_position='[lon, lat]',
+            radius=1000,
+            elevation_scale=50,
+            elevation_range=[0, 3000],
+            #pickable=True,
+            extruded=True,
+            coverage=10,
+         ),
      ],
  ))
+
+#st.pydeck_chart(pdk.Deck(
 
 
 
