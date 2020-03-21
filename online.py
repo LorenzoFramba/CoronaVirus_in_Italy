@@ -79,10 +79,6 @@ st.altair_chart(alt_plot)
 #filtered_data = df_prov[df_prov["data"].dt.hour == day_to_filter]
 
 
-st.subheader('Map of all pickups')
-
-st.write(df_prov.lon)
-
 
 st.subheader('CASI PER PROVINCIA')
 
@@ -135,8 +131,9 @@ st.pydeck_chart(pdk.Deck(
          pdk.Layer(
               'ScatterplotLayer',     # Change the `type` positional argument here
               data=dfa,
-              get_position=['lng', 'lat'],
+              get_position=['lon', 'lat'],
               auto_highlight=True,
+              width_min_pixels=5,
               get_radius=1000,          # Radius is given in meters
               get_fill_color=[180, 0, 200, 140],  # Set an RGBA value for fill
               pickable=True
