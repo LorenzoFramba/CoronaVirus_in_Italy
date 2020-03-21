@@ -4,9 +4,9 @@ import datetime
 from pandas import DataFrame
 import altair as alt
 from altair import datum
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-from matplotlib.pyplot import figure
+#import matplotlib.pyplot as plt
+#import matplotlib.dates as mdates
+#from matplotlib.pyplot import figure
 
 
 def getData(tipo:str):
@@ -129,20 +129,20 @@ def TotaleValori(reg: bool,regione: str, df: pd.DataFrame, azione:str ):
     #PlottingData(data,y,regione,azione)
     return altair_scatter(df,data,y,"")
     
-fig, ax = plt.subplots()
+#fig, ax = plt.subplots()
 
-def PlottingData(x,y,regione:str,azione:str):
+#def PlottingData(x,y,regione:str,azione:str):
    
-    ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
-    fig.autofmt_xdate()
-    plt.xlabel('data')
-    plt.ylabel(azione)
-    plt.plot(x,y, label=regione)
+ #   ax.fmt_xdata = mdates.DateFormatter('%Y-%m-%d')
+ #   fig.autofmt_xdate()
+ #   plt.xlabel('data')
+ #   plt.ylabel(azione)
+ #   plt.plot(x,y, label=regione)
 
-    plt.title('Aumento ' + azione)
-    fig.set_size_inches(18.5, 10.5, forward=True)
-    plt.legend();
-    plt.grid(True)
+ #   plt.title('Aumento ' + azione)
+  #  fig.set_size_inches(18.5, 10.5, forward=True)
+ #   plt.legend();
+  #  plt.grid(True)
 
 
 
@@ -172,7 +172,7 @@ province = getLocations(dataProvince,False)
 regioni = getLocations(dataRegioni,True)
 
 
-fig, ax = plt.subplots()
+#fig, ax = plt.subplots()
     
 
 
@@ -195,4 +195,4 @@ fig, ax = plt.subplots()
 
 
 
-plt.show()
+#plt.show()

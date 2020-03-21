@@ -5,6 +5,7 @@ import altair as alt
 import Utils as utils
 import streamlit as st
 import plotly.express as px
+import pydeck as pdk
 
 
 st.title('COVID-19 IN ITALIA')
@@ -27,6 +28,9 @@ data_load_state = st.text('Loading data...')
 df = load_Data('regioni')
 df_prov = load_Data('province')
 df_prov = df_prov[(df_prov[['lat','long']] != 0).all(axis=1)]
+
+df.rename(columns={'long':'lon'},  inplace=True)
+df_prov.rename(columns={'long':'lon'},  inplace=True)
 
 
 
@@ -64,41 +68,91 @@ alt_plot = utils.altair_scatter(df.loc[df['denominazione_regione'].isin(regioni_
 
 st.altair_chart(alt_plot)
 
+
+
+
 ###########################################################################
 
 
+#day_to_filter = st.slider('day', df_prov["data"].min, df_prov["data"].max, df_prov["data"].min)
 
 
-selection = alt.selection_multi(fields=['year'])
+#filtered_data = df_prov[df_prov["data"].dt.hour == day_to_filter]
+
+
+st.subheader('Map of all pickups')
+
+st.write(df_prov.lon)
+
+
+st.subheader('CASI PER PROVINCIA')
+
+
+#crime_type = st.multiselect('Select the list of crimes you\'d like to filter by',
+ #                           list(df.category.unique()), list(df.category.unique()))
+
+# Streamlit's integration with DeckGL. 
+# DataFrame is easily filtered based on the output from the multiselect
+#st.deck_gl_chart(
+ #   viewport={
+  #      'latitude':df_prov['lat'],
+   #     'longitude':df_prov['lon'],
+    #    'zoom':12
+    #},
+    #layers = [{
+    #'data': df_prov.totale_casi.to_json(),
+    #'type': 'ScatterplotLayer',
+    #'radiusScale':0.1,
+    #'pickable':True
+#}])
+
+dfa = pd.DataFrame(
+    df_prov.totale_casi,
+    columns=[df_prov.lat, df_prov.lon])
 
 
 
-[]
+st.pydeck_chart(pdk.Deck(
+     map_style='mapbox://styles/mapbox/light-v9',
+     initial_view_state=pdk.ViewState(
+         latitude=df_prov.lat[3],
+         longitude=df_prov.lon[3],
+         zoom=5,
+         pitch=20,
+     ),
+     layers=[
+         #pdk.Layer(
+          #  'HexagonLayer',
+        #    data=dfa,
+         #   get_position='[lon, lat]',
+          #  radius=200,
+        #    width_min_pixels=50,
+         #  get_color='[255, 147, 0, 150]',
+          #  elevation_scale=50,
+           # elevation_range=[0, 100000],
+    #        #pickable=True,
+     #       extruded=True,
+      #   ),
+         pdk.Layer(
+              'ScatterplotLayer',     # Change the `type` positional argument here
+              dfa,
+              get_position=['lng', 'lat'],
+              auto_highlight=True,
+              get_radius=1000,          # Radius is given in meters
+              get_fill_color=[180, 0, 200, 140],  # Set an RGBA value for fill
+              pickable=True
+              ),
+         #pdk.Layer(
+          #   'ScatterplotLayer',
+           #  data=dfa,
+    #         width_min_pixels=5,
+     #        get_position='[lon, lat]',
+      #       get_color='[2000, 300, 0, 1600]',
+       #      get_radius=20000,
+        # ),
+     ],
+ ))
 
-
-
-
-test = st.selectbox("AZIONE",regioni)
-
-
-st.line_chart(regioni_selezionate)
-
-
-cols = ["deceduti", "data", "tamponi"]
-regioni_selezionate = st.multiselect("Columns", df.columns.tolist(), default=cols)
-
-
-values = st.slider("deceduti", float(df.deceduti.min()), float(df.deceduti.max()), (200., 700.))
-f = px.histogram(df.query(f"deceduti.between{values}"), x="data", nbins=200, title="Deceduti")
-f.update_xaxes(title="Price")
-f.update_yaxes(title="Deceduti")
-st.plotly_chart(f)
-
-
-
-
-
-#utils.TotaleValori(True,'Veneto',df,'totale_casi')
 
 
 
