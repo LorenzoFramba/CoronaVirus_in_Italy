@@ -4,6 +4,7 @@ import datetime
 from pandas import DataFrame
 import altair as alt
 from altair import datum
+import pydeck as pdk
 #import matplotlib.pyplot as plt
 #import matplotlib.dates as mdates
 #from matplotlib.pyplot import figure
@@ -52,6 +53,31 @@ azioni = [
 
 
 
+def filtra(filtered_data):
+    zeri =[]
+    prov = []
+    for i,val in filtered_data.iterrows():
+        if val.totale_casi!=0:
+            for index in range((val.totale_casi)):
+                zeri.append([val.lat,val.lon])
+            prov.append([val.denominazione_provincia,val.totale_casi])
+
+    prov = pd.DataFrame(prov)  
+    df = pd.DataFrame(zeri) 
+    df.rename(columns={1:'lon',
+                          0:'lat'}, 
+                 inplace=True)
+
+    prov.rename(columns={0:'Provincia',
+                          1:'Casi'}, 
+                 inplace=True)
+
+    prov.sort_values(by=['Casi'], inplace=True, ascending=False)
+    prov.set_index('Provincia',inplace=True)
+    return df,prov
+
+
+
 def altair_scatter(dataset, x, y, totale):
     
     brush = alt.selection_interval()
@@ -69,6 +95,37 @@ def altair_scatter(dataset, x, y, totale):
         x=y
         ).transform_filter(brush)
     return plot & bars
+
+
+
+
+def crea_mappa(df):
+    mappa =(pdk.Deck(
+     map_style='mapbox://styles/mapbox/light-v9',
+     initial_view_state=pdk.ViewState(
+         latitude=41.902782,
+         longitude=12.496366,
+         zoom=4.5,
+         get_radius=1000,
+         pitch=20,
+     ),
+     layers=[
+         pdk.Layer(
+            'HexagonLayer',
+            data=df,
+            get_position='[lon, lat]',
+            radius=1000,
+            elevation_scale=50,
+            elevation_range=[0, 3000],
+            #pickable=True,
+            extruded=True,
+            coverage=10,
+         ),
+     ],
+    ))
+    return mappa
+
+
 
 def FattoreAumento(reg: bool, regione: str, df: pd.DataFrame, azione:str ):
     index=0

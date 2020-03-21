@@ -49,14 +49,6 @@ province=utils.getLocations(df_prov, False)
 ###########################################################################
 
 
-st.subheader('Dati nel Complesso per Provincia')
-
-province_selezionate = st.multiselect("Province", province, province[:5])  
-alt_plot_prov = utils.altair_scatter(df_prov.loc[df_prov['denominazione_provincia'].isin(province_selezionate)], "data", "totale_casi","denominazione_provincia" )
-
-st.altair_chart(alt_plot_prov)
-
-###########################################################################
 
 st.subheader('Dati nel Complesso per Regione')
 
@@ -75,75 +67,53 @@ st.altair_chart(alt_plot)
 ###########################################################################
 
 
-#day_to_filter = st.slider('day', df_prov["data"].min, df_prov["data"].max, df_prov["data"].min)
 
 
-#filtered_data = df_prov[df_prov["data"].dt.hour == day_to_filter]
+st.subheader('Dati nel Complesso per Provincia')
+
+province_selezionate = st.multiselect("Province", province, province[:5])  
+alt_plot_prov = utils.altair_scatter(df_prov.loc[df_prov['denominazione_provincia'].isin(province_selezionate)], "data", "totale_casi","denominazione_provincia" )
+
+st.altair_chart(alt_plot_prov)
+
+###########################################################################
 
 
 
-st.subheader('CASI PER PROVINCIA')
 
-
+#
 
 dfa = pd.DataFrame(
     df_prov,
     columns=[df_prov.lat, df_prov.lon])
 
 
-filtered_data = df_prov
-filtered_data["days_passed"] = filtered_data["data"].apply(
-        lambda x: (x - datetime.date(2020, 2, 24)).days)
-n_days = filtered_data["days_passed"].unique().shape[0] - 1
-
-st.markdown(
-        "Scegli che data visualizzare come numero di giorni dalla prima raccolta dati, il 24 febbraio:"
-)
-chosen_n_days = st.slider("Giorni:", min_value=0, max_value=n_days, value=n_days,)
-st.markdown(
-        f"Data scelta: {datetime.date(2020, 2, 24) + datetime.timedelta(days=chosen_n_days)}"
-)
-filtered_data = df_prov[df_prov["days_passed"] == chosen_n_days]
-
-zeri =[]
-for i,val in filtered_data.iterrows():
-    if val.totale_casi!=0:
-        for index in range((val.totale_casi)):
-            zeri.append([val.lat,val.lon])
-            
-df = pd.DataFrame(zeri) 
-df.rename(columns={1:'lon',
-                          0:'lat'}, 
-                 inplace=True)
 
 
-#filtered_data.drop(['data', 'stato','codice_regione','denominazione_regione','denominazione_provincia','codice_provincia','sigla_provincia','totale_casi','days_passed'], axis = 1, inplace=True)
 
-st.pydeck_chart(pdk.Deck(
-     map_style='mapbox://styles/mapbox/light-v9',
-     initial_view_state=pdk.ViewState(
-         latitude=41.902782,
-         longitude=12.496366,
-         zoom=4.5,
-         get_radius=1000,
-         pitch=20,
-     ),
-     layers=[
-         pdk.Layer(
-            'HexagonLayer',
-            data=df,
-            get_position='[lon, lat]',
-            radius=1000,
-            elevation_scale=50,
-            elevation_range=[0, 3000],
-            #pickable=True,
-            extruded=True,
-            coverage=10,
-         ),
-     ],
- ))
+today = datetime.date.today() #- datetime.timedelta(days=1)
+inizio = datetime.date(2020, 2, 24)
 
-#st.pydeck_chart(pdk.Deck(
+
+
+
+chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {today} e {inizio}", today)
+if  chosen_date > inizio :
+    st.success(f"{chosen_date} é compatibile coi dati" )
+    filtered_data = df_prov[df_prov["data"] == chosen_date]
+    df,prov = utils.filtra(filtered_data)
+    province_da_visualizzare = st.slider('Province da Visualizzare', 3, len(province), 5)
+    st.dataframe(prov[:province_da_visualizzare])
+    st.pydeck_chart(utils.crea_mappa(df))
+    
+    
+else:
+    st.error( f"Selezionare un giorno compreso tra {inizio} e {today} ")
+
+
+
+
+
 
 
 
