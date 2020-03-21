@@ -4,7 +4,6 @@ import pandas as pd
 import altair as alt
 import Utils as utils
 import streamlit as st
-from vega_datasets import data
 import pydeck as pdk
 import datetime
 
