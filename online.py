@@ -74,7 +74,7 @@ st.subheader('Dati nel Complesso per Provincia')
 province_selezionate = st.multiselect("Province", province, province[:5])  
 alt_plot_prov = utils.altair_scatter(df_prov.loc[df_prov['denominazione_provincia'].isin(province_selezionate)], "data", "totale_casi","denominazione_provincia" )
 
-st.altair_chart(alt_plot_prov, )
+st.altair_chart(alt_plot_prov)
 
 ###########################################################################
 
@@ -84,7 +84,7 @@ st.altair_chart(alt_plot_prov, )
 #
 
 
-today = datetime.date.today() #- datetime.timedelta(days=1)
+today = datetime.date.today()- datetime.timedelta(days=1) #
 inizio = datetime.date(2020, 2, 24)
 
 
@@ -94,8 +94,8 @@ inizio = datetime.date(2020, 2, 24)
 
 
 
-chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {inizio} e {today} ", today)
-if  chosen_date > inizio  and chosen_date <= today:
+chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {inizio} e {today} (non compreso) ", today)
+if  chosen_date > inizio  and chosen_date <= (today):
     filtered_data = df_prov[df_prov["data"] == chosen_date]
     df,prov = utils.filtra(filtered_data)
     prov=prov.reset_index()
@@ -107,7 +107,7 @@ if  chosen_date > inizio  and chosen_date <= today:
     #st.dataframe(prov[:province_da_visualizzare])
     st.pydeck_chart(utils.crea_mappa(df))
 else:
-    st.error( f"Selezionare un giorno compreso tra {inizio} e {today} ")
+    st.error( f"Selezionare un giorno compreso tra {inizio} e {today}  (non compreso) ")
 
 
 
