@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 import pandas as pd
-
+import altair as alt
 import Utils as utils
 import streamlit as st
 import plotly.express as px
@@ -25,31 +25,77 @@ def load_Data(tipo:str):
 data_load_state = st.text('Loading data...')
 
 df = load_Data('regioni')
+df_prov = load_Data('province')
+df_prov = df_prov[(df_prov[['lat','long']] != 0).all(axis=1)]
+
+
 
 data_load_state.text('Loading data...done!')
+
 
 if st.checkbox('Guarda i Dati'):
     st.subheader('Raw data')
     st.write(df)
+    st.write(df_prov)
+
+regioni=utils.getLocations(df, True)
+province=utils.getLocations(df_prov, False)
+
+###########################################################################
 
 
-st.subheader('Number of pickups by hour')
+st.subheader('Dati nel Complesso per Provincia')
 
-hist_values = np.histogram(df.tamponi)
-st.bar_chart(hist_values)
+province_selezionate = st.multiselect("Province", province, province[:5])  
+alt_plot_prov = utils.altair_scatter(df_prov.loc[df_prov['denominazione_provincia'].isin(province_selezionate)], "data", "totale_casi","denominazione_provincia" )
+
+st.altair_chart(alt_plot_prov)
+
+###########################################################################
+
+st.subheader('Dati nel Complesso per Regione')
+
+
+regioni_selezionate = st.multiselect("Regioni", regioni, regioni[:5])  
+azione = st.selectbox("Azione",utils.azioni,format_func=utils.cols.get)
+
+
+alt_plot = utils.altair_scatter(df.loc[df['denominazione_regione'].isin(regioni_selezionate)], "data", azione,"denominazione_regione" )
+
+st.altair_chart(alt_plot)
+
+###########################################################################
 
 
 
 
-values = st.sidebar.slider("deceduti", float(df.deceduti.min()), float(df.deceduti.max()), (200., 700.))
+selection = alt.selection_multi(fields=['year'])
+
+
+
+[]
+
+
+
+
+test = st.selectbox("AZIONE",regioni)
+
+
+st.line_chart(regioni_selezionate)
+
+
+cols = ["deceduti", "data", "tamponi"]
+regioni_selezionate = st.multiselect("Columns", df.columns.tolist(), default=cols)
+
+
+values = st.slider("deceduti", float(df.deceduti.min()), float(df.deceduti.max()), (200., 700.))
 f = px.histogram(df.query(f"deceduti.between{values}"), x="data", nbins=200, title="Deceduti")
 f.update_xaxes(title="Price")
 f.update_yaxes(title="Deceduti")
 st.plotly_chart(f)
 
 
-cols = ["deceduti", "data", "tamponi"]
-st_ms = st.multiselect("Columns", df.columns.tolist(), default=cols)
+
 
 
 #utils.TotaleValori(True,'Veneto',df,'totale_casi')
