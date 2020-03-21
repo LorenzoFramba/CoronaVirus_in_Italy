@@ -4,7 +4,6 @@ import pandas as pd
 import altair as alt
 import Utils as utils
 import streamlit as st
-import plotly.express as px
 import pydeck as pdk
 
 
@@ -135,7 +134,7 @@ st.pydeck_chart(pdk.Deck(
       #   ),
          pdk.Layer(
               'ScatterplotLayer',     # Change the `type` positional argument here
-              dfa,
+              data=dfa,
               get_position=['lng', 'lat'],
               auto_highlight=True,
               get_radius=1000,          # Radius is given in meters
