@@ -83,15 +83,15 @@ def altair_scatter(dataset, x, y, totale):
     brush = alt.selection_interval()
 
     plot = (
-        alt.Chart(dataset, height=400, width=600)
+        alt.Chart(dataset, height=400, width='container')#600)
         .mark_point(filled=True, opacity=0.8)
         .mark_line(point=True)
         .encode(x=x, y=y, color=alt.condition(brush, totale, alt.value('lightgray'))) 
     ).add_selection(brush)#.interactive()
         
-    bars = alt.Chart(dataset, height=100, width=600).mark_bar().encode(
+    bars = alt.Chart(dataset, height=100, width='container').mark_bar().encode(
         y=totale,
-        color=totale,
+        color=alt.Color(totale),
         x=y
         ).transform_filter(brush)
     return plot & bars
@@ -100,11 +100,11 @@ def altair_scatter(dataset, x, y, totale):
 
 
 def altair_chart(dataset, x, y):
-    bars = alt.Chart(dataset, height=200, width=800).mark_bar().encode(
+
+    bars = alt.Chart(dataset, height=200, width='container').mark_bar().encode( #800
         y=alt.X(x,sort=None),
         color=y,
-        x=y
-        )
+        x=y) 
     return bars
 
 
@@ -245,20 +245,6 @@ dataRegioni = getData('regioni')
 dataProvince = getData('province')
 province = getLocations(dataProvince,False)
 regioni = getLocations(dataRegioni,True)
-
-
-#fig, ax = plt.subplots()
-    
-
-
-#for provincia in province[:30]:
- #   TotaleValori(False,provincia,dataProvince,'totale_casi')
-
-#TotaleValori(False,'Modena',dataProvince,'totale_casi')
-#TotaleValori(False,'Rovereto',dataProvince,'totale_casi')
-#TotaleValori(False,'Brescia',dataProvince,'totale_casi')
-#TotaleValori(False,'Vicenza',dataProvince,'totale_casi')
-
 
 
 

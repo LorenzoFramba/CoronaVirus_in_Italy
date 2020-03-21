@@ -74,7 +74,7 @@ st.subheader('Dati nel Complesso per Provincia')
 province_selezionate = st.multiselect("Province", province, province[:5])  
 alt_plot_prov = utils.altair_scatter(df_prov.loc[df_prov['denominazione_provincia'].isin(province_selezionate)], "data", "totale_casi","denominazione_provincia" )
 
-st.altair_chart(alt_plot_prov)
+st.altair_chart(alt_plot_prov, )
 
 ###########################################################################
 
