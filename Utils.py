@@ -99,6 +99,17 @@ def altair_scatter(dataset, x, y, totale):
 
 
 
+def altair_chart(dataset, x, y):
+    bars = alt.Chart(dataset, height=200, width=800).mark_bar().encode(
+        y=alt.X(x,sort=None),
+        color=y,
+        x=y
+        )
+    return bars
+
+
+
+
 def crea_mappa(df):
     mappa =(pdk.Deck(
      map_style='mapbox://styles/mapbox/light-v9',

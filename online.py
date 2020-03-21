@@ -6,7 +6,7 @@ import Utils as utils
 import streamlit as st
 import pydeck as pdk
 import datetime
-
+from datetime import datetime as dt
 
 
 st.title('COVID-19 IN ITALIA')
@@ -83,30 +83,29 @@ st.altair_chart(alt_plot_prov)
 
 #
 
-dfa = pd.DataFrame(
-    df_prov,
-    columns=[df_prov.lat, df_prov.lon])
-
-
-
-
 
 today = datetime.date.today() #- datetime.timedelta(days=1)
 inizio = datetime.date(2020, 2, 24)
 
 
+#data_scelta = st.slider(f"Seleziona giornata da analizzare tra {today} e {inizio}", inizio, today, today)
+
+
+
 
 
 chosen_date = st.date_input(f"Seleziona giornata da analizzare tra {today} e {inizio}", today)
-if  chosen_date > inizio :
-    st.success(f"{chosen_date} é compatibile coi dati" )
+if  chosen_date > inizio  and chosen_date <= today:
     filtered_data = df_prov[df_prov["data"] == chosen_date]
     df,prov = utils.filtra(filtered_data)
-    province_da_visualizzare = st.slider('Province da Visualizzare', 3, len(province), 5)
-    st.dataframe(prov[:province_da_visualizzare])
+    prov=prov.reset_index()
+    province_da_visualizzare = st.slider('Province piú infette da Visualizzare', 3, 10, 5)
+    
+    st.altair_chart(utils.altair_chart(prov.head(province_da_visualizzare), "Provincia", "Casi" ))
+    
+    
+    #st.dataframe(prov[:province_da_visualizzare])
     st.pydeck_chart(utils.crea_mappa(df))
-    
-    
 else:
     st.error( f"Selezionare un giorno compreso tra {inizio} e {today} ")
 
